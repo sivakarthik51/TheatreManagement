@@ -1,0 +1,44 @@
+{% extends 'Movies/base.html' %}
+{% block title %}
+    Details
+{% endblock %}
+
+
+{% block body %}
+    <div class = "container">
+        <div class = "row">
+            <div class = "col-md-4 text-center">
+                <div class = "thumbnail">
+                     <img src = "{{ object.movie_poster.url }}" class = "img-responsive">
+                     <h3>{{ object.name  }}</h3>
+                </div>
+            </div>
+            <div class = "col-md-8">
+                <h3>IMDB Rating:</h3>
+                <hr>
+                <h4>Cast:</h4>
+                <hr>
+                <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Character Name</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for t in meta %}
+             <tr>
+                <td>{{ t.person_name }}</td>
+                <td>{{ t.character_name }}</td>
+             </tr>
+        {% endfor %}
+
+    </tbody>
+  </table>
+  </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

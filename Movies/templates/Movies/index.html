@@ -1,0 +1,29 @@
+
+{% extends 'Movies/base.html' %}
+{% block title %}
+    Movies
+{% endblock %}
+{% block body %}
+    <div id = "movies_list">
+        <div class = "container">
+            <h3 class = "text-center">All the latest and Best</h3>
+            <p class = "text-center">Remember to Book</p>
+        <div class = "row">
+            {% for movie in all_Movies %}
+
+                <div class = "col-sm-4 text-center">
+                    <div class = "thumbnail">
+                        <img src = "{{ movie.movie_poster.url }}" class = "img-responsive" width = "400" height = "300">
+                        <hr>
+                        <p>{{ movie.name }}</p>
+                        <p >Director: {{ movie.director }}</p>
+                        <p >Genre: {{ movie.genre }}</p>
+                        <button class="btn" data-toggle="modal" data-target="#myModal">Buy Tickets</button>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+        </div>
+    </div>
+{%  endblock %}
