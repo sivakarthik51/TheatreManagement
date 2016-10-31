@@ -91,7 +91,7 @@
                         Add Movie
                     </a>
                 </li>
-                {% if user is None %}
+                {% if not user.is_authenticated %}
                 <li class="" id="login">
                     <a href="#" >
                         <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;
@@ -99,9 +99,9 @@
                     </a>
                 </li>
                 {% endif %}
-                {% if user %}
+                {% if user.is_authenticated %}
                 <li class="" id="logout">
-                    <a href="#" >
+                    <a href="{% url 'Login:logout' %}" >
                         <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;
                         Logout
                     </a>
@@ -120,14 +120,14 @@
           <h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
-          <form role="form">
+          <form role="form" action = "{% url 'Login:login_user' %}">
             <div class="form-group">
               <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
-              <input type="text" class="form-control" id="usrname" placeholder="Enter email">
+              <input type="text" class="form-control" id="usrname" name="usrname" placeholder="Enter email">
             </div>
             <div class="form-group">
               <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
-              <input type="text" class="form-control" id="psw" placeholder="Enter password">
+              <input type="text" class="form-control" id="psw" name="psw" placeholder="Enter password">
             </div>
             <div class="checkbox">
               <label><input type="checkbox" value="" checked>Remember me</label>
@@ -137,7 +137,7 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-          <p>Not a member? <a href="#">Sign Up</a></p>
+          <p>Not a member? <a href="{% url 'Login:register' %}">Sign Up</a></p>
           <p>Forgot <a href="#">Password?</a></p>
         </div>
       </div>
