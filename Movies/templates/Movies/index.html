@@ -12,9 +12,10 @@
             {% for movie in all_Movies %}
 
                 <div class = "col-sm-4 text-center">
-                    <div class = "thumbnail">
+                    <a href="{% url 'Movies:detail' pk=movie.pk %}">
+                        <div class = "thumbnail">
                         <img src = "{{ movie.movie_poster.url }}" class = "img-responsive" width = "400" height = "300">
-                        <hr>
+                        <hr></a>
                         <p>{{ movie.name }}</p>
                         <p >Director: {{ movie.director }}</p>
                         <p >Genre: {{ movie.genre }}</p>

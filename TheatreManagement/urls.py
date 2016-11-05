@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^',include('Home.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^movies/',include('Movies.urls')),
-    url(r'^register/',include('Login.urls')),
+    url(r'^auth/',include('Login.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,document_root = settings.STATIC_ROOT)
