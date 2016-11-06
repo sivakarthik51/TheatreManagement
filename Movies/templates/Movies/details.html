@@ -9,12 +9,14 @@
         <div class = "row">
             <div class = "col-md-4 text-center">
                 <div class = "thumbnail">
-                     <img src = "{{ object.movie_poster.url }}" class = "img-responsive">
+                     <img src = "{{ object.movie_poster.url }}" class = "img-thumbnail" height="400">
                      <h3>{{ object.name  }}</h3>
                 </div>
             </div>
             <div class = "col-md-8">
-                <h3>IMDB Rating:</h3>
+                <h5>IMDB Rating: {{mov_meta.rating }}</h5>
+                <h5>Runtime: {{ mov_meta.runtime }}</h5>
+                <h5>Release: {{ mov_meta.release_date }}</h5>
                 <hr>
                 <h4>Cast:</h4>
                 <hr>
