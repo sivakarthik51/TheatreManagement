@@ -11,4 +11,13 @@ urlpatterns = [
 
     #/movies/
     url(r'add/$',views.MovieCreate.as_view(),name = 'movie_add'),
+
+    #/movies/edit/<id>
+    url(r'edit/(?P<pk>[0-9]+)$',views.MovieUpdate.as_view(),name='movie_update'),
+
+    #/movies/edit/<id>/delete
+    url(r'edit/(?P<pk>[0-9]+)/delete$',views.MovieDelete.as_view(),name='movie_delete'),
+
+    #/movies/book/<id>
+    url(r'book/(?P<pk>[0-9]+)/$',views.BookTickets.as_view(),name='book_ticket')
 ]

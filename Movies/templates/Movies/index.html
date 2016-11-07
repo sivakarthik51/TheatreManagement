@@ -19,7 +19,26 @@
                         <p>{{ movie.name }}</p>
                         <p >Director: {{ movie.director }}</p>
                         <p >Genre: {{ movie.genre }}</p>
-                        <button class="btn" data-toggle="modal" data-target="#TicketModal">Buy Tickets</button>
+                        <form action="{% url 'Movies:book_ticket' movie.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button class="btn btn-info" type="submit" >Buy Tickets</button>
+                        </form>
+                        {%  if user.is_authenticated and user.is_staff %}
+                        <form action="{% url 'Movies:movie_delete' movie.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name ="movie_id" value="{{ movie.id }}" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <span class = "glyphicon glyphicon-trash"></span>
+                            </button>
+                        </form>
+                            <form action="{% url 'Movies:movie_update' movie.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name ="movie_id" value="{{ movie.id }}" />
+                            <button type="submit" class="btn btn-info btn-sm">
+                                <span class = "glyphicon glyphicon-edit"></span>
+                            </button>
+                        </form>
+                        {% endif %}
                     </div>
                 </div>
 
