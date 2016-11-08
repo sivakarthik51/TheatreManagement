@@ -2,6 +2,9 @@ from __future__ import unicode_literals
 import datetime
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from numpy.random.mtrand import choice
+
 from Establishments.models import Establishment,Theatre
 from django.contrib.auth.models import User
 # Create your models here.
@@ -45,11 +48,12 @@ class Show(models.Model):
         return self.movie.name + '-'+ str(self.show_time.date())
 
 class Ticket(models.Model):
-
+    #movie = models.ForeignKey(Movie,on_delete=models.CASCADE,default=0)
     show = models.ForeignKey(Show,on_delete=models.CASCADE)
-    user = models.OneToOneField(User,default=User())
+    user = models.ForeignKey(User)
     price = models.FloatField(default=0.0)
     seat_no = models.CharField(max_length=10,unique=True)
+
 
 
     def __init__(self, *args, **kwargs):

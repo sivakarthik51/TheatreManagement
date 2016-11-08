@@ -1,11 +1,14 @@
 from .models import Movie,Cast,Movie_Meta,Ticket
 import imdb
+from .forms import TicketForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.views.generic.edit import CreateView,UpdateView,DeleteView
+from django.views.generic import View
 from django.db import transaction
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import render,redirect
 
 class IndexView(generic.ListView):
     template_name = 'Movies/index.html'
@@ -94,9 +97,24 @@ class MovieDelete(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
     model = Movie
     success_url = reverse_lazy('Movies:index')
 
-class BookTickets(LoginRequiredMixin,CreateView):
+class BookTickets(LoginRequiredMixin,View):
     login_url = '/'
     redirect_field_name = None
-    model = Ticket
-    fields = ['user','show','seat_no']
+    form_class = TicketForm
+    template_name = 'Movies/ticket_form.html'
 
+    def get(self,request,pk):
+        form = self.form_class(None)
+        return render(request,self.template_name,{'form':form})
+
+    def post(self,request,pk):
+        form = self.form_class(request.POST)
+        form.fields['show'].limit_choices_to={'movie_id':pk}
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            #ticket.movie = Movie.objects.all().filter(pk = pk)
+            ticket.save()
+
+            return redirect('Movies:index')
+        return render(request, self.template_name, {'form': form})
