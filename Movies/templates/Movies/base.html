@@ -93,7 +93,7 @@
             </form>
 
             <ul class="nav navbar-nav navbar-right">
-            {% if user.is_staff %}
+            {% if perms.Movies %}
                 <li class="">
                     <a href="{% url 'Movies:movie_add' %}">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
