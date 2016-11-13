@@ -8,9 +8,9 @@
 2. Once this is set up, navigate to the project directory containing the "manage.py" file.
 
 3. Install imdbpy and django_extensions modules using the following commands
-.
-      * pip install (-U) imdbpy
-      * pip install (-U) django_extensions
+
+      .* pip install (-U) imdbpy
+      .* pip install (-U) django_extensions
 
 
 4. Open up a command prompt and run the following command "manage.py runserver 8000".
