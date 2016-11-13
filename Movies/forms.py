@@ -38,3 +38,5 @@ class MovieCreateForm(forms.ModelForm):
         print est.name
         if self.establishment_user:
             self.fields['theatre'].queryset = Theatre.objects.filter(establishment=est)
+
+#TODO Show Form

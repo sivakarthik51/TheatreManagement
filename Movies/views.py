@@ -1,10 +1,12 @@
 from .models import Movie,Cast,Movie_Meta,Ticket,Show
 from Establishments.models import Theatre,Establishment
+from datetime import datetime
+from django.core.exceptions import ValidationError
 import imdb
 from django.db.models import Min, Max
 from django.core.mail import EmailMessage
 from .forms import TicketForm,MovieCreateForm
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.views.generic.edit import CreateView,UpdateView,DeleteView
@@ -16,7 +18,10 @@ from django.shortcuts import render,redirect
 class IndexView(generic.ListView):
     template_name = 'Movies/index.html'
     context_object_name = 'all_Movies'
-
+    def get_context_data(self, **kwargs):
+        context = super(IndexView,self).get_context_data(**kwargs)
+        context['can_change'] = False
+        return context
     def get_queryset(self):
         return get_distinct_movies()
 
@@ -34,7 +39,6 @@ def get_distinct_movies():
 class DetailView(generic.DetailView):
     model = Movie
     template_name = 'Movies/details.html'
-
     def get_context_data(self, **kwargs):
         context = super(DetailView,self).get_context_data(**kwargs)
         context["meta"] = Cast.objects.all().filter(movie_id =self.object.pk)
@@ -46,7 +50,8 @@ class DetailView(generic.DetailView):
             if movie.name == t.name:
                 theatres.append(Theatre.objects.get(pk=movie.theatre.id))
         context["theatres"]=theatres
-        context["shows"] = Show.objects.filter(movie__pk = self.object.pk)
+        print Show.objects.filter(show_time__gt=datetime.now())
+        context["shows"] = Show.objects.filter(show_time__gte=datetime.now()).filter(movie__pk = self.object.pk)
         return context
 
 mov = None
@@ -123,11 +128,35 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
                 ia = imdb.IMDb()
                 if movie_form.meta_completed is False:
                     s_result = ia.search_movie(movie_form.name)
-                    if s_result is None:
+                    print s_result[0]
+                    if not str(s_result[0]).__contains__(movie_form.name) :
+                        form.add_error('name',ValidationError('Movie Does Not Exist'))
                         print "Movie Does not Exist"
                         return render(request, self.template_name, {'form': form})
+                    print s_result
                     movieID = s_result[0].movieID
                     movie = ia.get_movie(movieID)
+                    dir = movie.get('director')
+                    flag_director = False
+                    flag_genre = False
+                    for i in range(0,len(dir)):
+                        print dir[i]
+                        if str(movie_form.director) == str(dir[i]):
+                            print "Correct Director"
+                            flag_director = True
+                            break
+                    genres = movie.get('genres')
+                    for i in range(0,len(genres)):
+                        if str(movie_form.genre) == str(genres[i]):
+                            flag_genre = True
+                            break
+
+                    if not flag_director:
+                        form.add_error('director',ValidationError('Wrong Director'))
+                        return render(request, self.template_name, {'form': form})
+                    if not flag_genre:
+                        form.add_error('genre', ValidationError('Incorrect Genre'))
+                        return render(request, self.template_name, {'form': form})
                     people = movie.get('cast')
                     rating = movie.get('rating')
                     movie_form.meta_completed = True
@@ -160,7 +189,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 #create View End
 
 class MovieUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
-    permission_required = 'movies.can_add'
+    permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
     login_url = '/'
     redirect_field_name = None
@@ -175,7 +204,7 @@ class MovieUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
 
 
 class MovieDelete(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
-    permission_required = 'movies.can_add'
+    permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
     login_url = '/'
     redirect_field_name = None
@@ -212,12 +241,23 @@ class BookTickets(LoginRequiredMixin,View):
             return redirect('Movies:ticket_details',pk=ticket.pk)
         return render(request, self.template_name, {'form': form})
 
-class ListMovies_Theatres(LoginRequiredMixin,ListView):
+class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
+
+    def test_func(self):
+        can_change = self.request.user.groups.filter(name='Establishment').exists()
+        print can_change
+        return can_change
+    can_change = True
     model = Movie
     login_url = '/'
     redirect_field_name = None
     template_name = 'Movies/index.html'
     context_object_name = 'all_Movies'
+
+    def get_context_data(self, **kwargs):
+        context = super(ListMovies_Theatres, self).get_context_data(**kwargs)
+        context['can_change'] = True
+        return context
     def get_queryset(self):
         user = self.request.user
         print user

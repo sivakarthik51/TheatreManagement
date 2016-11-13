@@ -44,7 +44,7 @@ class Movie_Meta(models.Model):
 class Show(models.Model):
     theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
-    show_time = models.DateTimeField(default=datetime.datetime.today())
+    show_time = models.DateTimeField(editable=True)
     def __str__(self):
         return self.movie.name + '-'+ str(self.show_time.date())
 

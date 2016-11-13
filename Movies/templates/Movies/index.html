@@ -23,7 +23,7 @@
                             {% csrf_token %}
                             <button class="btn btn-info" type="submit" >Buy Tickets</button>
                         </form>
-                        {%  if user.is_authenticated and user.is_staff %}
+                        {%  if user.is_authenticated and can_change %}
                         <form action="{% url 'Movies:movie_delete' movie.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <input type="hidden" name ="movie_id" value="{{ movie.id }}" />
