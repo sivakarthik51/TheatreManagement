@@ -7,7 +7,7 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model=Ticket
-        fields = [ 'theatre','show', 'seat_no']
+        fields = ['show', 'seat_no']
 
     def __init__(self, *args, **kwargs):
         self.id = kwargs.pop('mov_id',None)
@@ -16,12 +16,17 @@ class TicketForm(forms.ModelForm):
         print Show.objects.filter(movie=movie)
         super(TicketForm, self).__init__(*args, **kwargs)
         self.fields['show'].queryset = Show.objects.filter(movie=movie)
+        t = Movie.objects.values_list('theatre',flat=True).filter(name=movie.name)
+        theatres = Theatre.objects.filter(pk__in=t)
+        print t
+        print theatres
+        #self.fields['theatre'].queryset=theatres
 
 class MovieCreateForm(forms.ModelForm):
 
     class Meta:
         model = Movie
-        fields = ['theatre', 'name', 'director', 'genre', 'movie_poster']
+        fields = [ 'theatre', 'name', 'director', 'genre', 'movie_poster']
 
     def __init__(self,*args,**kwargs):
         self.establishment_user = kwargs.pop('establishment_user',None)
@@ -29,5 +34,7 @@ class MovieCreateForm(forms.ModelForm):
         if self.establishment_user:
             est = Establishment.objects.get(user=self.establishment_user)
         super(MovieCreateForm, self).__init__(*args, **kwargs)
+        #self.fields['movie_poster'].required = False
+        print est.name
         if self.establishment_user:
-            self.fields['theatre'].queryset = Theatre.objects.filter(establishment__user=est)
+            self.fields['theatre'].queryset = Theatre.objects.filter(establishment=est)

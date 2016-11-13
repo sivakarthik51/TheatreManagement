@@ -1,14 +1,14 @@
 from .models import Movie,Cast,Movie_Meta,Ticket,Show
+from Establishments.models import Theatre,Establishment
 import imdb
-import smtplib
-from django.core.mail import send_mail
+from django.db.models import Min, Max
 from django.core.mail import EmailMessage
 from .forms import TicketForm,MovieCreateForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.views.generic.edit import CreateView,UpdateView,DeleteView
-from django.views.generic import View
+from django.views.generic import View,ListView
 from django.db import transaction
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render,redirect
@@ -18,7 +18,18 @@ class IndexView(generic.ListView):
     context_object_name = 'all_Movies'
 
     def get_queryset(self):
-        return Movie.objects.all()
+        return get_distinct_movies()
+
+def get_distinct_movies():
+    movies = Movie.objects.all()
+    checked = []
+    movies_new = []
+    for movie in movies:
+        if not (movie.name in checked):
+            movies_new.append(movie)
+        checked.append(movie.name)
+    print movies_new
+    return movies_new
 
 class DetailView(generic.DetailView):
     model = Movie
@@ -28,6 +39,14 @@ class DetailView(generic.DetailView):
         context = super(DetailView,self).get_context_data(**kwargs)
         context["meta"] = Cast.objects.all().filter(movie_id =self.object.pk)
         context["mov_meta"] = Movie_Meta.objects.all().filter(movie_id=self.object.pk).first()
+        theatres=[]
+        t = Movie.objects.get(pk = self.object.pk)
+        movies = Movie.objects.all()
+        for movie in movies:
+            if movie.name == t.name:
+                theatres.append(Theatre.objects.get(pk=movie.theatre.id))
+        context["theatres"]=theatres
+        context["shows"] = Show.objects.filter(movie__pk = self.object.pk)
         return context
 
 mov = None
@@ -50,7 +69,7 @@ def get_meta():
                     metadata.movie=t
                     metadata.rating = rating
                     metadata.release_date = str(movie.get('year'))
-                    metadata.runtime= movie.get('runtime')
+                    metadata.runtime= str(filter(str.isdigit,movie.get('runtime')))
                     metadata.save()
                     topActors = 5
                     for actor in people[:topActors]:
@@ -79,7 +98,8 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 
     transaction.on_commit(get_meta)
 """
-#Create View TODO
+
+#TODO Movie Create View
 class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
@@ -88,19 +108,21 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     form_class = MovieCreateForm
     template_name = 'Movies/movie_form.html'
     def get(self,request):
-        form = self.form_class(None)
+        form = self.form_class(request.GET,establishment_user=request.user)
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         print request.user
-        form = self.form_class(request.POST,establishment_user=request.user)
-
+        form = self.form_class(request.POST,request.FILES,establishment_user=request.user)
+        print request.FILES
         if form.is_valid():
-            movie = form.save(commit = False)
-            ia = imdb.IMDb()
+
+
             try:
-                if movie.meta_completed is False:
-                    s_result = ia.search_movie(movie.name)
+                movie_form = form.save(commit=False)
+                ia = imdb.IMDb()
+                if movie_form.meta_completed is False:
+                    s_result = ia.search_movie(movie_form.name)
                     if s_result is None:
                         print "Movie Does not Exist"
                         return render(request, self.template_name, {'form': form})
@@ -108,25 +130,32 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
                     movie = ia.get_movie(movieID)
                     people = movie.get('cast')
                     rating = movie.get('rating')
+                    movie_form.meta_completed = True
+                    movie_form.save()
                     metadata = Movie_Meta()
-                    metadata.movie=movie
+                    metadata.movie= movie_form
                     metadata.rating = rating
                     metadata.release_date = str(movie.get('year'))
                     metadata.runtime= movie.get('runtime')
+
                     metadata.save()
                     topActors = 5
                     for actor in people[:topActors]:
                         cast = Cast()
-                        cast.movie=movie
+                        cast.movie=movie_form
                         cast.person_name = actor['name']
                         cast.character_name = actor.currentRole
                         cast.save()
-                    movie.meta_completed = True
-                    movie.save()
-            except:
-                print "Exception"
-                pass
+                        print "Cast Saved"
 
+
+                    print "Movie saved"
+                    return redirect('Movies:detail',pk=movie_form.pk,)
+            except Exception as e:
+                print e
+                return render(request, self.template_name, {'form': form})
+        print "invalid Form"
+        return render(request, self.template_name, {'form': form})
 
 #create View End
 
@@ -169,7 +198,8 @@ class BookTickets(LoginRequiredMixin,View):
             ticket = form.save(commit=False)
             ticket.user = request.user
             ticket.movie = Movie.objects.all().filter(pk = pk).first()
-
+            #print str(form.changed_data['show'].theatre)
+            ticket.theatre = Theatre.objects.get(pk = ticket.show.theatre_id)
             email = EmailMessage('Booking Tickets '+str(ticket.movie.name),"Ticket Confirmed -- Seat No "+str(ticket.seat_no),'sivakarthik51@gmail.com',[ticket.user.email])
             try:
                 if email.send():
@@ -179,11 +209,32 @@ class BookTickets(LoginRequiredMixin,View):
             except Exception as e:
                 print e
             ticket.save()
-            return redirect('Movies:index')
+            return redirect('Movies:ticket_details',pk=ticket.pk)
         return render(request, self.template_name, {'form': form})
 
-class ListMovies_Theatres(View):
-    #model = movie
+class ListMovies_Theatres(LoginRequiredMixin,ListView):
+    model = Movie
+    login_url = '/'
+    redirect_field_name = None
     template_name = 'Movies/index.html'
-    def get(self,request,id):
-        return render(request,self.template_name,{'mov':Movie.objects.filter(theatre_id=id)})
+    context_object_name = 'all_Movies'
+    def get_queryset(self):
+        user = self.request.user
+        print user
+        print Movie.objects.filter(theatre__establishment__user=user)
+        return Movie.objects.filter(theatre__establishment__user=user)
+
+
+
+#TODO Create view for Ticket Confirmation
+class TicketDetailView(LoginRequiredMixin,generic.DetailView):
+    login_url = '/'
+    redirect_field_name = None
+    model=Ticket
+    template_name = 'Movies/ticket_details.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketDetailView, self).get_context_data(**kwargs)
+        context["mov_meta"] = Movie_Meta.objects.all().filter(movie_id=self.object.movie.id).first()
+        return context

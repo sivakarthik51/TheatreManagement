@@ -1,0 +1,55 @@
+{% extends 'Movies/base.html' %}
+{% block title %}
+    Details
+{% endblock %}
+
+
+{% block body %}
+    <div class = "container">
+        <div class = "row">
+            <div class = "col-md-4 text-center">
+                <div class = "thumbnail">
+                     <img src = "{{ object.movie.movie_poster.url }}" class = "img-thumbnail" height="400">
+                     <h3>{{ object.movie.name  }}</h3>
+                </div>
+            </div>
+            <div class = "col-md-8">
+                <h5>IMDB Rating: {{mov_meta.rating }}</h5>
+                <h5>Runtime: {{ mov_meta.runtime }}</h5>
+                <h5>Release: {{ mov_meta.release_date }}</h5>
+                <hr>
+                <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+
+             <tr>
+                <td>Movie Name:</td>
+                <td>{{ object.movie.name }}</td>
+             </tr>
+             <tr>
+                <td>Show:</td>
+                <td>{{ object.show}}</td>
+             </tr>
+             <tr>
+                <td>Time:</td>
+                <td>{{ object.show.show_time}}</td>
+             </tr>
+            <tr>
+                <td>Theatre:</td>
+                <td>{{ object.show.theatre.name }}</td>
+            </tr>
+
+    </tbody>
+  </table>
+  </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

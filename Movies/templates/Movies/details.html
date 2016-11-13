@@ -15,7 +15,7 @@
             </div>
             <div class = "col-md-8">
                 <h5>IMDB Rating: {{mov_meta.rating }}</h5>
-                <h5>Runtime: {{ mov_meta.runtime }}</h5>
+                <h5>Runtime: {{ mov_meta.runtime }} minutes</h5>
                 <h5>Release: {{ mov_meta.release_date }}</h5>
                 <hr>
                 <h4>Cast:</h4>
@@ -39,6 +39,27 @@
     </tbody>
   </table>
   </div>
+            <h4>Running in Theatres:</h4>
+            <!--TODO List Theatres running the movie-->
+            <hr>
+
+            {% for t in theatres %}
+                <blockquote>
+                <p>{{ t }}</p>
+                <p>{{ t.location }}</p>
+                <p>Shows:</p>
+                <ul>
+                    {% for s in shows %}
+                        {% if s.theatre == t %}
+                            <li>{{ s }} -- {{ s.show_time }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+
+                <footer>{{ t.city }}</footer>
+                </blockquote>
+            {% endfor %}
+            <hr>
             </div>
         </div>
     </div>

@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Movie(models.Model):
-    theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE)
+    theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=255)
     director = models.CharField(max_length=255)
     genre = models.CharField(max_length=100)
@@ -42,11 +42,13 @@ class Movie_Meta(models.Model):
         return self.movie.name + ' MetaData'
 
 class Show(models.Model):
+    theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
     show_time = models.DateTimeField(default=datetime.datetime.today())
     def __str__(self):
         return self.movie.name + '-'+ str(self.show_time.date())
 
+#TODO Seat Matrix Field
 class Ticket(models.Model):
     theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE,default=0)
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE,default=0)
