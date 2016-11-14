@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'Movies',
     'Home',
     'Login',
+    'datetimewidget',
     'Establishments',
     'django.contrib.admin',
     'django.contrib.auth',

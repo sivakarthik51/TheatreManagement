@@ -25,8 +25,11 @@ urlpatterns = [
     #/movies/book/ticket/<id>
     url(r'book/ticket/(?P<pk>[0-9]+)/$',views.TicketDetailView.as_view(),name='ticket_details'),
 
-    #/movies/theater
+    #/movies/theatre
     url(r'theatre/$',views.ListMovies_Theatres.as_view(),name='theatre_specific'),
+
+    #/movies/theatre/<pk>/addshow
+    url(r'theatre/addshow/(?P<pk>[0-9]+)/$',views.CreateShow.as_view(),name='show_create'),
 
     #/movies/search
     url(r'search/$',views.MovieQueries.as_view(),name='search')

@@ -46,3 +46,19 @@ class MovieQueryForm(forms.ModelForm):
         fields=['theatre']
 
 #TODO Show Form
+class ShowForm(forms.ModelForm):
+    show_time = forms.DateField(widget=forms.SelectDateWidget())
+    class Meta:
+        model = Show
+        fields=['show_time','theatre']
+
+    def __init__(self, *args, **kwargs):
+        #self.id = kwargs.pop('mov_id',None)
+        #self.eu = kwargs.pop('establishment_user',None)
+        #print self.id
+        #print self.eu
+        super(ShowForm, self).__init__(*args, **kwargs)
+        #movie = Movie.objects.get(pk=self.id)
+        #self.fields['theatre'].queryset = Theatre.objects.filter(movie=movie).filter(establishment__user=self.eu)
+
+

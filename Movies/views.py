@@ -15,13 +15,14 @@ from django.views.generic import View,ListView
 from django.db import transaction
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render,redirect
+from forms import ShowForm
 
 class IndexView(generic.ListView):
     template_name = 'Movies/index.html'
     context_object_name = 'all_Movies'
     def get_context_data(self, **kwargs):
         context = super(IndexView,self).get_context_data(**kwargs)
-        context['can_change'] = self.request.user.groups.filter(name='Establishment').exists()
+        context['can_change'] = False
         return context
     def get_queryset(self):
         return get_distinct_movies()
@@ -369,3 +370,21 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
                 return render(request, self.template_name, {'form': form})
 
 #TODO Create Show add,delete,update view for establishment authentication
+class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
+    login_url = '/'
+    redirect_field_name = None
+    permission_required = 'Movies.add_movie'
+    form_class = ShowForm
+    template_name = 'Movies/show_form.html'
+    def get(self,request,pk):
+        form = self.form_class(None)
+        return render(request,self.template_name,{'form':form,'pk':pk})
+
+    def post(self,request,pk):
+        form = self.form_class(request.POST,mov_id = pk,establishment_user=request.user)
+        if form.is_valid():
+            show = form.save(commit=False)
+            show.movie = Movie.objects.get(pk = pk)
+            show.save()
+            return render(request, self.template_name, {'form': form, 'pk': pk})
+        return render(request, self.template_name, {'form': form, 'pk': pk})
