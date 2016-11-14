@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group
 from django.views.generic import View,RedirectView
 from .forms import UserForm,LoginForm
 from django.core.validators import validate_email
+from models import UserWallet
 
 class UserFormView(View):
     form_class = UserForm
@@ -48,6 +49,9 @@ class UserFormView(View):
 
 
             user.set_password(password)
+            usrwlt = UserWallet()
+            usrwlt.user = user
+            usrwlt.save()
             user.save()
             user.groups.add(Group.objects.get(name='NormalUser'))
 

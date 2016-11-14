@@ -1,5 +1,6 @@
 from .models import Movie,Cast,Movie_Meta,Ticket,Show
 from Establishments.models import Theatre,Establishment
+from Login.models import UserWallet
 from datetime import datetime
 from django.core.exceptions import ValidationError
 import imdb
@@ -238,6 +239,9 @@ class BookTickets(LoginRequiredMixin,CreateView):
             ticket = form.save(commit=False)
             ticket.user = request.user
             ticket.movie = Movie.objects.all().filter(pk = pk).first()
+            cred = UserWallet.objects.get(user=request.user)
+            cred.credit = cred.credit - ticket.price
+            cred.save()
             #TODO Beautify Email
             ticket.theatre = Theatre.objects.get(pk = ticket.show.theatre_id)
             email = EmailMessage('Booking Tickets '+str(ticket.movie.name),"Ticket Confirmed -- Seat No "+str(ticket.seat_no),'sivakarthik51@gmail.com',[ticket.user.email])

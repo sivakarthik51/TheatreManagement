@@ -55,7 +55,7 @@ class Ticket(models.Model):
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE,default=0)
     show = models.ForeignKey(Show,on_delete=models.CASCADE)
     user = models.ForeignKey(User)
-    price = models.FloatField(default=0.0)
+    price = models.FloatField(default=250.0)
     seat_no = models.IntegerField(unique=True,validators=[MaxValueValidator(49), MinValueValidator(0)])
 
     class Meta:
