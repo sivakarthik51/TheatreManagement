@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from . import views
 
+
 app_name = 'Movies'
 
 urlpatterns = [
@@ -25,5 +26,9 @@ urlpatterns = [
     url(r'book/ticket/(?P<pk>[0-9]+)/$',views.TicketDetailView.as_view(),name='ticket_details'),
 
     #/movies/theater
-    url(r'theatre/$',views.ListMovies_Theatres.as_view(),name='theatre_specific')
+    url(r'theatre/$',views.ListMovies_Theatres.as_view(),name='theatre_specific'),
+
+    #/movies/search
+    url(r'search/$',views.MovieQueries.as_view(),name='search')
 ]
+

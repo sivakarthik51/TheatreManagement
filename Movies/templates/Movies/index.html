@@ -1,5 +1,10 @@
 
 {% extends 'Movies/base.html' %}
+{% block style %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'Movies/style.css' %}">
+    <script src="{% static 'Movies/script.js' %}"></script>
+{% endblock %}
 {% block title %}
     Movies
 {% endblock %}
@@ -8,6 +13,11 @@
         <div class = "container">
             <h3 class = "text-center">All the latest and Best</h3>
             <p class = "text-center">Remember to Book</p>
+            <form action="{% url 'Movies:search' %}" method="post">
+                {% csrf_token %}
+                {% include 'Movies/search.html' %}
+            </form>
+        <br>
         <div class = "row">
             {% for movie in all_Movies %}
 

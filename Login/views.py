@@ -1,10 +1,12 @@
 from django.shortcuts import render,redirect
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import Group
 from django.views.generic import View,RedirectView
 from .forms import UserForm,LoginForm
+from django.core.validators import validate_email
 
 class UserFormView(View):
     form_class = UserForm
@@ -25,14 +27,27 @@ class UserFormView(View):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             password1 = form.cleaned_data['confirm_password']
+            if any(not char.isalpha() for char in user.first_name):
+                form.add_error('first_name', ValidationError('Name can Contain only alphabets'))
+                return render(request, self.template_name, {'form': form})
+            if any(not char.isalpha() for char in user.last_name):
+                form.add_error('last_name', ValidationError('Name can contain only alphabets'))
+                return render(request, self.template_name, {'form': form})
+            if User.objects.filter(email = user.email).exists():
+                form.add_error('email',ValidationError('Another user has registered with the same email address'))
+                return render(request, self.template_name, {'form': form})
+            if not validate_email(user.email):
+                form.add_error('email', ValidationError('Please enter a valid email address'))
+                return render(request, self.template_name, {'form': form})
             if len(password) < 8:
                 form.add_error('password',ValidationError('Password too short'))
                 return render(request, self.template_name, {'form': form})
             if password != password1:
                 form.add_error('confirm_password',ValidationError('Password does not match'))
                 return render(request, self.template_name, {'form': form})
-            user.set_password(password)
 
+
+            user.set_password(password)
             user.save()
             user.groups.add(Group.objects.get(name='NormalUser'))
 

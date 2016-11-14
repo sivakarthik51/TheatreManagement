@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 import imdb
 from django.db.models import Min, Max
 from django.core.mail import EmailMessage
-from .forms import TicketForm,MovieCreateForm
+from .forms import TicketForm,MovieCreateForm,MovieQueryForm
 from django.contrib.auth.mixins import PermissionRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
@@ -20,7 +20,7 @@ class IndexView(generic.ListView):
     context_object_name = 'all_Movies'
     def get_context_data(self, **kwargs):
         context = super(IndexView,self).get_context_data(**kwargs)
-        context['can_change'] = False
+        context['can_change'] = self.request.user.groups.filter(name='Establishment').exists()
         return context
     def get_queryset(self):
         return get_distinct_movies()
@@ -211,17 +211,28 @@ class MovieDelete(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
     model = Movie
     success_url = reverse_lazy('Movies:index')
 
-class BookTickets(LoginRequiredMixin,View):
+class BookTickets(LoginRequiredMixin,CreateView):
     login_url = '/'
     redirect_field_name = None
     form_class = TicketForm
     template_name = 'Movies/ticket_form.html'
 
+    def get_context_data(self,*args, **kwargs):
+        print Movie.objects.get(pk=self.request.pk).max_no_seats
+        context = super(BookTickets, self).get_context_data(*args,**kwargs)
+        print Movie.objects.get(pk=self.request.pk).max_no_seats
+        context["ticket_range"] = Movie.objects.get(pk=self.request.pk).max_no_seats
+        return context
+
+
     def get(self,request,pk):
         form = self.form_class(None)
-        return render(request,self.template_name,{'form':form})
+        return render(request,self.template_name,{'form':form,'pk':pk})
 
     def post(self,request,pk):
+        max_seats= Movie.objects.get(pk=pk).max_no_seats
+        tickets = Ticket.objects.filter(movie=Movie.objects.get(pk = pk))
+        shows = Show.objects.filter(movie=Movie.objects.get(pk=pk))
         form = self.form_class(request.POST,mov_id=pk)
         if form.is_valid():
             ticket = form.save(commit=False)
@@ -239,7 +250,7 @@ class BookTickets(LoginRequiredMixin,View):
                 print e
             ticket.save()
             return redirect('Movies:ticket_details',pk=ticket.pk)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form,'seats':range(max_seats),'tickets':tickets,'shows':shows})
 
 class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
 
@@ -256,7 +267,7 @@ class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListMovies_Theatres, self).get_context_data(**kwargs)
-        context['can_change'] = True
+        context['can_change'] = self.request.user.groups.filter(name='Establishment').exists()
         return context
     def get_queryset(self):
         user = self.request.user
@@ -278,5 +289,79 @@ class TicketDetailView(LoginRequiredMixin,generic.DetailView):
         context = super(TicketDetailView, self).get_context_data(**kwargs)
         context["mov_meta"] = Movie_Meta.objects.all().filter(movie_id=self.object.movie.id).first()
         return context
+
+class MovieQueries(LoginRequiredMixin,generic.ListView):
+    login_url = '/'
+    redirect_field_name = None
+    model = Movie
+    template_name = 'Movies/index.html'
+    context_object_name = 'all_movies'
+    form_class = MovieQueryForm
+    def post(self,request):
+        form = self.form_class(request.POST)
+        query = request.POST.get('query')
+        filter_condition = request.POST.get('filter_condition')
+        if filter_condition == str(0):
+            if len(query) > 4:
+                movies = Movie.objects.filter(name__contains=query)
+                distinct = []
+                checked = []
+                for movie in movies:
+                    if not movie.name in checked:
+                        distinct.append(movie)
+                    checked.append(movie.name)
+                print distinct
+                return render(request, self.template_name, {'all_Movies': distinct})
+            return redirect('Movies:index')
+        if filter_condition == str(1):
+            print "res"
+            movies= Movie.objects.filter(theatre__city=query)
+            distinct = []
+            checked = []
+            for movie in movies:
+                if not movie.name in checked:
+                    distinct.append(movie)
+                checked.append(movie.name)
+            print distinct
+            return render(request, self.template_name,{'all_Movies':distinct})
+        if filter_condition == str(2):
+            theatres = Theatre.objects.filter(name=query)
+            movies = Movie.objects.filter(theatre__name__contains=query)
+            distinct = []
+            checked = []
+            for movie in movies:
+                if not movie.name in checked:
+                    distinct.append(movie)
+                checked.append(movie.name)
+            print distinct
+            return render(request, self.template_name, {'all_Movies': distinct})
+        if filter_condition == str(3):
+            if len(query)>4:
+                movies = Movie.objects.filter(theatre__location__contains=query)
+                distinct = []
+                checked = []
+                for movie in movies:
+                    if not movie.name in checked:
+                        distinct.append(movie)
+                    checked.append(movie.name)
+                return render(request, self.template_name, {'all_Movies': distinct})
+            else:
+                print "validation error"
+                form.add_error('query',ValidationError('Cannot search with small parameters'))
+                return render(request, self.template_name, {'form': form})
+        if filter_condition == str(4):
+            if len(query)>4:
+                movies = Movie.objects.filter(genre__contains=query)
+                distinct = []
+                checked = []
+                for movie in movies:
+                    if not movie.name in checked:
+                        distinct.append(movie)
+                    checked.append(movie.name)
+                return render(request, self.template_name, {'all_Movies': distinct})
+            else:
+                print "validation error"
+                form.add_error('query',ValidationError('Cannot search with small parameters'))
+                return render(request, self.template_name, {'form': form})
 
 #TODO Create Show add,delete,update view for establishment authentication

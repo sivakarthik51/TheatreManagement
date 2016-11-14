@@ -39,4 +39,10 @@ class MovieCreateForm(forms.ModelForm):
         if self.establishment_user:
             self.fields['theatre'].queryset = Theatre.objects.filter(establishment=est)
 
+class MovieQueryForm(forms.ModelForm):
+    query = forms.CharField(max_length = 255)
+    class Meta:
+        model=Movie
+        fields=['theatre']
+
 #TODO Show Form

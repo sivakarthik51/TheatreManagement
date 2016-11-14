@@ -20,6 +20,29 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-5">
+        {% for s in shows %}
+
+            <p>{{ s }}</p>
+            <div class = "well" id="{{ s }}">
+            <script>
+                $(document).ready(function () {
+
+                    {% for t in tickets %}
+                    {% if t.show == s %}
+                        $('#seat_{{ forloop.parentloop.counter0 }}_{{ t.seat_no }}').removeClass("btn btn-primary btn-xs").addClass("btn btn-danger btn-xs")
+                        {% endif %}
+                    {% endfor %}
+                })
+            </script>
+
+            {% for i in seats %}
+                <input type="button" class="btn btn-primary btn-xs" id="seat_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="{{ forloop.counter0 }}">
+                </input>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}

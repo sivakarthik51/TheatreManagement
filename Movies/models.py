@@ -3,6 +3,7 @@ import datetime
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 from Establishments.models import Establishment,Theatre
@@ -16,7 +17,7 @@ class Movie(models.Model):
     genre = models.CharField(max_length=100)
     meta_completed = models.BooleanField(default=False)
     movie_poster = models.FileField()
-
+    max_no_seats = models.IntegerField(default=0)
 
     def get_absolute_url(self):
         return reverse('Movies:detail',kwargs={'pk':self.pk})
@@ -55,7 +56,7 @@ class Ticket(models.Model):
     show = models.ForeignKey(Show,on_delete=models.CASCADE)
     user = models.ForeignKey(User)
     price = models.FloatField(default=0.0)
-    seat_no = models.CharField(max_length=10,unique=True)
+    seat_no = models.IntegerField(unique=True,validators=[MaxValueValidator(49), MinValueValidator(0)])
 
     class Meta:
         unique_together = ('show', 'seat_no')

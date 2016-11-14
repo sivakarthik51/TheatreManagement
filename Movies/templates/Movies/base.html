@@ -49,7 +49,9 @@
         <div class="col-md-6">
             <div class = "pull-right">
                 {% if user.is_authenticated %}
-                    <p>Welcome,{{ user.username }}</p>
+                    <p class=" text-primary">Welcome,{{ user.username }}</p>
+                    {% else %}
+                        <p class = "bg-primary text-danger">Please Login to continue</p>
                 {% endif %}
             </div>
         </div>
@@ -77,23 +79,13 @@
                         Movies
                     </a>
                 </li>
-                <li class="">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>&nbsp;
-                        People
-                    </a>
-                </li>
+
             </ul>
 
-            <form action="#" class="navbar-form navbar-left" role="search" method=""get">
-                <div class="form-group">
-                    <input type="text" class="form-control" name="q" value="">
-                </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+
 
             <ul class="nav navbar-nav navbar-right">
-            {% if perms.Movies %}
+            {% if user.is_authenticated and can_change %}
                 <li class="">
                     <a href="{% url 'Movies:movie_add' %}">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
