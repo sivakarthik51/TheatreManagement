@@ -227,7 +227,7 @@ class BookTickets(LoginRequiredMixin,View):
             ticket = form.save(commit=False)
             ticket.user = request.user
             ticket.movie = Movie.objects.all().filter(pk = pk).first()
-            #print str(form.changed_data['show'].theatre)
+            #TODO Beautify Email
             ticket.theatre = Theatre.objects.get(pk = ticket.show.theatre_id)
             email = EmailMessage('Booking Tickets '+str(ticket.movie.name),"Ticket Confirmed -- Seat No "+str(ticket.seat_no),'sivakarthik51@gmail.com',[ticket.user.email])
             try:
@@ -278,3 +278,5 @@ class TicketDetailView(LoginRequiredMixin,generic.DetailView):
         context = super(TicketDetailView, self).get_context_data(**kwargs)
         context["mov_meta"] = Movie_Meta.objects.all().filter(movie_id=self.object.movie.id).first()
         return context
+
+#TODO Create Show add,delete,update view for establishment authentication
