@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput,help_text='Minimum 8 characters')
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model = User
@@ -11,7 +11,7 @@ class UserForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput,help_text='Minimum 8 characters')
 
     class Meta:
         model = User

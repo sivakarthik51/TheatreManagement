@@ -16,7 +16,8 @@ class UserFormView(View):
     #display Blank Form
     def get(self,request):
         form = self.form_class(None)
-        return render(request,self.template_name,{'form':form})
+        ti = 'Create New Account'
+        return render(request,self.template_name,{'form':form,'ti':ti})
 
     # Process Form Data
     def post(self,request):
@@ -30,23 +31,23 @@ class UserFormView(View):
             password1 = form.cleaned_data['confirm_password']
             if any(not char.isalpha() for char in user.first_name):
                 form.add_error('first_name', ValidationError('Name can Contain only alphabets'))
-                return render(request, self.template_name, {'form': form})
+
             if any(not char.isalpha() for char in user.last_name):
                 form.add_error('last_name', ValidationError('Name can contain only alphabets'))
-                return render(request, self.template_name, {'form': form})
+
             if User.objects.filter(email = user.email).exists():
                 form.add_error('email',ValidationError('Another user has registered with the same email address'))
-                return render(request, self.template_name, {'form': form})
-            if not validate_email(user.email):
+
+            if  validate_email(user.email):
                 form.add_error('email', ValidationError('Please enter a valid email address'))
-                return render(request, self.template_name, {'form': form})
+
             if len(password) < 8:
                 form.add_error('password',ValidationError('Password too short'))
-                return render(request, self.template_name, {'form': form})
+
             if password != password1:
                 form.add_error('confirm_password',ValidationError('Password does not match'))
-                return render(request, self.template_name, {'form': form})
-
+            ti = 'Create New Account'
+            return render(request, self.template_name, {'form': form,'ti':ti})
 
             user.set_password(password)
             usrwlt = UserWallet()
@@ -60,7 +61,7 @@ class UserFormView(View):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-                    return redirect('Home:home_index')
+                    return redirect('Movies:theatre_specific')
         return render(request,self.template_name,{'form':form})
 
 class Logout(View):
@@ -83,6 +84,6 @@ class Login(View):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-        return redirect('Home:home_index')
+        return redirect('Movies:theatre_specific')
 
 

@@ -1,28 +1,50 @@
 {% extends 'Movies/base.html' %}
 {% block title %}Register{% endblock %}
 {% block body %}
+    {% block style %}
+    {% load static %}
+        <link rel="stylesheet" href="{% static 'Login/style.css' %}">
+        <script>
+            $(document).ready(function () {
+                $("#login1").click(function () {
+                    $("#myModal").modal();
+                })
+            })
+        </script>
+    {% endblock %}
+
     <div class = "container-fluid">
     <div class = "row">
         <div class = "col-sm-12 col-md-7">
             <div class = "panel panel-default">
                 <div class = "panel-body">
-                <h3>Create New Account</h3>
+
                 {% if error_message %}
                     <p><strong>{{ error_message }}</strong></p>
                 {% endif %}
-                    <form class = "form-horizontal" action = "" method = 'post' enctype="multipart/form-data">
+                    <form class = "form-register" name="Create Account" action = "" method = 'post' enctype="multipart/form-data">
+
+                        <div class="form-register-with-email">
+
                         {% csrf_token %}
                         {% include 'Movies/form-template.html' %}
-                        <div class="form-group">
+
+                        <div class="form-row">
                             <div class = "col-sm-offset-2 col-sm-10">
                                 <button type="submit" class = "btn btn-success">Submit</button>
                             </div>
+                        </div>
                         </div>
                     </form>
 
                 </div>
             </div>
         </div>
+        <div class = "col-sm-12 col-md-5 text-center">
+            <button type="button" id = "login1" class="btn btn-primary btn-lg">Sign in</button>
+        </div>
+
     </div>
+
 </div>
 {% endblock %}

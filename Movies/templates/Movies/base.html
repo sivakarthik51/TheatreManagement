@@ -50,6 +50,9 @@
             <div class = "pull-right">
                 {% if user.is_authenticated %}
                     <p class=" text-primary">Welcome,{{ user.username }}</p>
+                    {% if role != None %}
+                        <p class="text-primary">Representative, {{ role }}</p>
+                        {% endif %}
                     {% if  usrwlt != None %}
                     <p class="text-primary">Credit Remaining: {{ usrwlt.credit }}</p>
                         {% endif %}
