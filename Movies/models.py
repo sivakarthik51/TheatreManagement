@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-
 from Establishments.models import Establishment,Theatre
 from django.contrib.auth.models import User
 # Create your models here.
@@ -47,7 +46,7 @@ class Show(models.Model):
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
     show_time = models.DateTimeField(editable=True)
     def __str__(self):
-        return self.movie.name + '-'+ str(self.show_time.date())
+        return self.movie.name
 
 #TODO Seat Matrix Field
 class Ticket(models.Model):
