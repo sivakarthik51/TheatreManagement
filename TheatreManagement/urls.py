@@ -18,13 +18,20 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.contrib import admin
+def i18n_javascript(request):
+  return admin.site.i18n_javascript(request)
+
 urlpatterns = [
     url(r'^',include('Home.urls')),
+    url(r'^admin/jsi18n', i18n_javascript,name='translate'),
     url(r'^admin/', admin.site.urls),
     url(r'^movies/',include('Movies.urls')),
     url(r'^auth/',include('Login.urls')),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,document_root = settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

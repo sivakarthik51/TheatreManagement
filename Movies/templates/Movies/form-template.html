@@ -1,18 +1,21 @@
-<div class="form-white-background">
+
+
 <div class="form-title-row">
     <h1>{{ ti }}</h1>
 </div>
 {% for field in form %}
     <div class="form-group">
-        <div class = " col-md-24">
-            <span class ="text-danger small">{{ field.errors }}</span>
-        </div>
+
         <div class = "form-row">
         <label >
-            <span>{{ field.label_tag }}</span>
+            <span>{{ field.label_tag }} <span class ="pull-right text-danger small">{{ field.errors }}</span></span>
             {{ field }}
+
         </label>
+
+
+
         </div>
     </div>
 {% endfor %}
-</div>
+

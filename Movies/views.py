@@ -16,7 +16,7 @@ from django.db import transaction
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render,redirect
 from forms import ShowForm
-
+import dateutil.parser
 class IndexView(generic.ListView):
     template_name = 'Movies/index.html'
     context_object_name = 'all_Movies'
@@ -51,11 +51,17 @@ class DetailView(generic.DetailView):
         for movie in movies:
             if movie.name == t.name:
                 theatres.append(Theatre.objects.get(pk=movie.theatre.id))
+        if self.request.user and self.request.user.groups.filter(name='Establishment').exists():
+            for th in theatres:
+                print th.establishment.user
+                if not( th.establishment.user == self.request.user):
+                    theatres.remove(th)
+
         context["theatres"]=theatres
         print Show.objects.filter(show_time__gt=datetime.now())
         context["shows"] = Show.objects.filter(show_time__gte=datetime.now()).filter(movie__pk = self.object.pk)
         return context
-
+"""
 mov = None
 
 def get_meta():
@@ -91,7 +97,7 @@ def get_meta():
                 print "Exception"
                 mov = None
                 pass
-"""
+
 class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     permission_required = 'movies.can_add'
     permission_denied_message = 'Forbidden'
@@ -114,9 +120,10 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     redirect_field_name = None
     form_class = MovieCreateForm
     template_name = 'Movies/movie_form.html'
+    title="Add Movie"
     def get(self,request):
         form = self.form_class(request.GET,establishment_user=request.user)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form,'ti':self.title})
 
     def post(self, request):
         print request.user
@@ -167,7 +174,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
                     metadata.movie= movie_form
                     metadata.rating = rating
                     metadata.release_date = str(movie.get('year'))
-                    metadata.runtime= movie.get('runtime')
+                    metadata.runtime= str(filter(str.isdigit,movie.get('runtime')))
 
                     metadata.save()
                     topActors = 5
@@ -184,9 +191,9 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
                     return redirect('Movies:detail',pk=movie_form.pk,)
             except Exception as e:
                 print e
-                return render(request, self.template_name, {'form': form})
+                return render(request, self.template_name, {'form': form,'ti':self.title})
         print "invalid Form"
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form,'ti':self.title})
 
 #create View End
 
@@ -198,10 +205,7 @@ class MovieUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
     model = Movie
     fields = ['name', 'director', 'genre', 'movie_poster']
 
-    global mov
-    mov = Movie.objects.all()
 
-    transaction.on_commit(get_meta)
 
 
 
@@ -218,7 +222,7 @@ class BookTickets(LoginRequiredMixin,CreateView):
     redirect_field_name = None
     form_class = TicketForm
     template_name = 'Movies/ticket_form.html'
-
+    title = 'Book Tickets'
     def get_context_data(self,*args, **kwargs):
         print Movie.objects.get(pk=self.request.pk).max_no_seats
         context = super(BookTickets, self).get_context_data(*args,**kwargs)
@@ -228,13 +232,14 @@ class BookTickets(LoginRequiredMixin,CreateView):
 
 
     def get(self,request,pk):
+
         form = self.form_class(None)
-        return render(request,self.template_name,{'form':form,'pk':pk})
+        return render(request,self.template_name,{'form':form,'pk':pk,'ti':self.title})
 
     def post(self,request,pk):
         max_seats= Movie.objects.get(pk=pk).max_no_seats
         tickets = Ticket.objects.filter(movie=Movie.objects.get(pk = pk))
-        shows = Show.objects.filter(movie=Movie.objects.get(pk=pk))
+        shows = Show.objects.filter(movie=Movie.objects.get(pk=pk)).filter(show_time__gte=datetime.now())
         form = self.form_class(request.POST,mov_id=pk)
         if form.is_valid():
             ticket = form.save(commit=False)
@@ -255,7 +260,7 @@ class BookTickets(LoginRequiredMixin,CreateView):
                 print e
             ticket.save()
             return redirect('Movies:ticket_details',pk=ticket.pk)
-        return render(request, self.template_name, {'form': form,'seats':range(max_seats),'tickets':tickets,'shows':shows})
+        return render(request, self.template_name, {'form': form,'seats':range(max_seats),'tickets':tickets,'shows':shows,'ti':self.title})
 
 class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
 
@@ -376,15 +381,30 @@ class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     permission_required = 'Movies.add_movie'
     form_class = ShowForm
     template_name = 'Movies/show_form.html'
+
     def get(self,request,pk):
-        form = self.form_class(None)
-        return render(request,self.template_name,{'form':form,'pk':pk})
+        form = self.form_class(request.GET,mov_id = pk,establishment_user=request.user)
+        title = "Create Show for "+str(Movie.objects.get(pk = pk).name)
+        return render(request,self.template_name,{'form':form,'pk':pk,'ti':title})
 
     def post(self,request,pk):
         form = self.form_class(request.POST,mov_id = pk,establishment_user=request.user)
+        title = "Create Show for " + str(Movie.objects.get(pk=pk).name)
+
+        request.POST['show_time'] = dateutil.parser.parse(request.POST['show_time_0'] + " " + request.POST['show_time_1'])
+        print request.POST['show_time']
+        request.POST.pop('show_time_0')
+        request.POST.pop('show_time_1')
+        print form.is_valid()
         if form.is_valid():
-            show = form.save(commit=False)
-            show.movie = Movie.objects.get(pk = pk)
-            show.save()
-            return render(request, self.template_name, {'form': form, 'pk': pk})
-        return render(request, self.template_name, {'form': form, 'pk': pk})
+            try:
+                print "Inside"
+                show = form.save(commit=False)
+                show.movie = Movie.objects.get(pk=pk)
+
+                show.save()
+            except Exception as e:
+                print e
+
+            return redirect('Movies:detail', pk=pk, )
+        return render(request, self.template_name, {'form': form, 'pk': pk,'ti':title})
