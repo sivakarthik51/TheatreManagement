@@ -46,7 +46,7 @@ class Show(models.Model):
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
     show_time = models.DateTimeField(editable=True)
     def __str__(self):
-        return self.movie.name
+        return self.theatre.name +"-"+ str(self.show_time)
 
 #TODO Seat Matrix Field
 class Ticket(models.Model):

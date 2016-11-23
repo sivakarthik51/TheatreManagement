@@ -4,37 +4,25 @@
 {% block title %}Add a New Show {% endblock %}
 {% block body %}
     {% block style %}
-        <script type="text/javascript" src="{% url 'translate' %}"></script>
-        <script>function gettext(txt){ return txt }</script>
-    {% load static %}
-        <link rel="stylesheet" href="{% static 'Movies/style.css' %}">
-
-        <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}"/>
-        <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js'%}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/jquery.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/actions.js' %}"></script>
-
-{% endblock %}
+        {% load static %}
+            <link rel="stylesheet" href="{% static 'Movies/style.css' %}">
+    {% endblock %}
     {% block extrahead %}
         {% load  admin_static %}
-
-    {{ form.media }}
-        {% endblock %}
+        {{ form.media }}
+    {% endblock %}
 <div class = "container-fluid">
     <div class = "row">
         <div class = "col-sm-12 col-md-7">
-            <div class = "panel panel-default">
+            <div class = "panel panel-primary" >
+                <div class="panel-heading">Add Show</div>
                 <div class = "panel-body">
 
                     <form class = "form-basic" action = "" method = 'post' enctype="multipart/form-data">
                         {% csrf_token %}
                         {% include 'Movies/form-template.html' %}
                         <div class="form-group">
-                            <div class = "col-sm-offset-2 col-sm-10">
                                 <button type="submit" class = "btn btn-success">Submit</button>
-                            </div>
                         </div>
                     </form>
 

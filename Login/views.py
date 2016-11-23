@@ -61,7 +61,10 @@ class UserFormView(View):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-                    return redirect('Movies:theatre_specific')
+                    if request.user.groups.filter(name='Establishment').exists():
+                        return redirect('Movies:theatre_specific')
+                    else:
+                        return redirect('Movies:index')
         return render(request,self.template_name,{'form':form})
 
 class Logout(View):
@@ -84,6 +87,9 @@ class Login(View):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-        return redirect('Movies:theatre_specific')
+                    if request.user.groups.filter(name='Establishment').exists():
+                        return redirect('Movies:theatre_specific')
+                    else:
+                        return redirect('Movies:index')
 
-
+        return redirect('Login:register')

@@ -3,7 +3,9 @@ from models import Ticket
 from django.contrib.admin import widgets
 from Movies.models import Show,Movie
 from Establishments.models import Establishment,Theatre
+from datetimewidget.widgets import DateTimeWidget
 import dateutil.parser
+from datetime import datetime
 
 
 class TicketForm(forms.ModelForm):
@@ -18,7 +20,7 @@ class TicketForm(forms.ModelForm):
         movie = Movie.objects.get(pk=self.id)
         print Show.objects.filter(movie=movie)
         super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['show'].queryset = Show.objects.filter(movie=movie)
+        self.fields['show'].queryset = Show.objects.filter(movie=movie).filter(show_time__gte=datetime.now())
         t = Movie.objects.values_list('theatre',flat=True).filter(name=movie.name)
         theatres = Theatre.objects.filter(pk__in=t)
         print t
@@ -50,7 +52,8 @@ class MovieQueryForm(forms.ModelForm):
 
 #TODO Show Form
 class ShowForm(forms.ModelForm):
-    show_time = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime())
+    show_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
+    # show_time = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime())
     class Meta:
         model = Show
         fields=['show_time','theatre']

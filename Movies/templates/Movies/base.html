@@ -48,6 +48,7 @@
             <h1 style="font-family: Satisfy">TheatriXs</h1>
             <p>The Movie Lover</p>
         </div>
+        <!--
         <div class="col-md-6">
             <div class = "pull-right">
                 {% if user.is_authenticated %}
@@ -63,6 +64,7 @@
                 {% endif %}
             </div>
         </div>
+        -->
         </div>
         </div>
     </div>
@@ -117,12 +119,55 @@
 
                 {% endif %}
                 {% if user.is_authenticated %}
+                    <!--
                 <li class="" id="logout">
                     <a href="{% url 'Login:logout' %}" >
                         <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;
                         Logout
                     </a>
+                </li> -->
+                   <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> 
+                        <strong>{{ user.username }}</strong>
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+
+                                        <p class="text-center"><span class="glyphicon glyphicon-user "></span><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+                                        <p class="text-center text-success text-small">{{ user.email }}</p>
+                                        {% if role != None %}
+                                        <p class="text-left">
+                                            <a href="{% url 'Movies:theatre_specific' %}" class="btn btn-primary btn-block btn-sm">{{ role }}</a>
+                                        </p>
+                                            {% endif %}
+                                    {% if  usrwlt != None %}
+                    <p class="text-primary text-center">Credit Remaining: {{ usrwlt.credit }}</p>
+                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="navbar-login navbar-login-session">
+                                <div class="row">
+                                    <div class="col-md-12">
+
+                                            <a href="{% url 'Login:logout' %}" class="btn btn-danger btn-block btn-sm">Logout</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </li>
+
                 {% endif %}
             </ul>
         </div>

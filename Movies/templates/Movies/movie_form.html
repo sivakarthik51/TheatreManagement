@@ -7,11 +7,12 @@
 {% endblock %}
 <div class = "container-fluid">
     <div class = "row">
-        <div class = "col-sm-12 col-md-10">
-            <div class = "panel panel-default">
+        <div class = "col-sm-12 col-md-7">
+            <div class = "panel panel-primary">
+                <div class="panel-heading">Add Movie</div>
                 <div class = "panel-body">
 
-                    <form class = "form-basic" action = "" method = 'post' enctype="multipart/form-data">
+                    <form class = "form-basic" action = "" method = 'post' enctype="multipart/form-data"  >
                         {% csrf_token %}
                         {% include 'Movies/form-template.html' %}
                         <div class="form-group">

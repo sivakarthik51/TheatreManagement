@@ -112,7 +112,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     transaction.on_commit(get_meta)
 """
 
-#TODO Movie Create View
+
 class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
@@ -287,7 +287,7 @@ class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
 
 
 
-#TODO Create view for Ticket Confirmation
+
 class TicketDetailView(LoginRequiredMixin,generic.DetailView):
     login_url = '/'
     redirect_field_name = None
@@ -374,7 +374,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
                 form.add_error('query',ValidationError('Cannot search with small parameters'))
                 return render(request, self.template_name, {'form': form})
 
-#TODO Create Show add,delete,update view for establishment authentication
+
 class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     login_url = '/'
     redirect_field_name = None
@@ -391,17 +391,18 @@ class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
         form = self.form_class(request.POST,mov_id = pk,establishment_user=request.user)
         title = "Create Show for " + str(Movie.objects.get(pk=pk).name)
 
-        request.POST['show_time'] = dateutil.parser.parse(request.POST['show_time_0'] + " " + request.POST['show_time_1'])
-        print request.POST['show_time']
-        request.POST.pop('show_time_0')
-        request.POST.pop('show_time_1')
+        #request.POST['show_time'] = dateutil.parser.parse(request.POST['show_time_0'] + " " + request.POST['show_time_1'])
+
+
         print form.is_valid()
         if form.is_valid():
             try:
                 print "Inside"
                 show = form.save(commit=False)
                 show.movie = Movie.objects.get(pk=pk)
-
+                if show.show_time < datetime.now():
+                    form.add_error('show_time',ValidationError('Time must be after this moment'))
+                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title})
                 show.save()
             except Exception as e:
                 print e
