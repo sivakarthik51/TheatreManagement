@@ -20,7 +20,7 @@ class TicketForm(forms.ModelForm):
         movie = Movie.objects.get(pk=self.id)
         print Show.objects.filter(movie=movie)
         super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['show'].queryset = Show.objects.filter(movie=movie).filter(show_time__gte=datetime.now())
+        self.fields['show'].queryset = Show.objects.filter(movie__name=movie.name,show_time__gte=datetime.now())
         t = Movie.objects.values_list('theatre',flat=True).filter(name=movie.name)
         theatres = Theatre.objects.filter(pk__in=t)
         print t

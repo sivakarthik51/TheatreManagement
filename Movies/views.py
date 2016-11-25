@@ -315,7 +315,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
         query = request.POST.get('query')
         filter_condition = request.POST.get('filter_condition')
         if filter_condition == str(0):
-            if len(query) > 4:
+            if len(query) > 2:
                 movies = Movie.objects.filter(name__contains=query)
                 distinct = []
                 checked = []
@@ -349,7 +349,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
             print distinct
             return render(request, self.template_name, {'all_Movies': distinct})
         if filter_condition == str(3):
-            if len(query)>4:
+            if len(query)>2:
                 movies = Movie.objects.filter(theatre__location__contains=query)
                 distinct = []
                 checked = []
@@ -363,7 +363,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
                 form.add_error('query',ValidationError('Cannot search with small parameters'))
                 return render(request, self.template_name, {'form': form})
         if filter_condition == str(4):
-            if len(query)>4:
+            if len(query)>2:
                 movies = Movie.objects.filter(genre__contains=query)
                 distinct = []
                 checked = []
