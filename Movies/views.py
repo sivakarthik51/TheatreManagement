@@ -242,7 +242,7 @@ class BookTickets(LoginRequiredMixin,CreateView):
     def post(self,request,pk):
         max_seats= Movie.objects.get(pk=pk).max_no_seats
         tickets = Ticket.objects.filter(movie=Movie.objects.get(pk = pk))
-        shows = Show.objects.filter(movie=Movie.objects.get(pk=pk)).filter(show_time__gte=datetime.now())
+        shows = Show.objects.filter(movie__name=Movie.objects.get(pk=pk).name,show_time__gte=datetime.now())
         form = self.form_class(request.POST,mov_id=pk)
         if form.is_valid():
             ticket = form.save(commit=False)
