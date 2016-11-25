@@ -58,8 +58,11 @@ class DetailView(generic.DetailView):
                     theatres.remove(th)
 
         context["theatres"]=theatres
-        print Show.objects.filter(show_time__gt=datetime.now())
-        context["shows"] = Show.objects.filter(show_time__gte=datetime.now()).filter(movie__pk = self.object.pk)
+        temp3 = Show.objects.filter(movie__name = self.object.name)
+        temp1 = temp3.filter(show_time__gte=datetime.now())
+        print temp3
+        print temp1
+        context["shows"] = Show.objects.filter(movie__name = self.object.name,show_time__gte=datetime.now()) #.filter(movie = self.object)
         return context
 """
 mov = None
