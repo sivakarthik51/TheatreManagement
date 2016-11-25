@@ -12,7 +12,7 @@ from models import UserWallet
 class UserFormView(View):
     form_class = UserForm
     template_name = 'Login/registration_form.html'
-
+    ti = 'Create New Account'
     #display Blank Form
     def get(self,request):
         form = self.form_class(None)
@@ -31,29 +31,36 @@ class UserFormView(View):
             password1 = form.cleaned_data['confirm_password']
             if any(not char.isalpha() for char in user.first_name):
                 form.add_error('first_name', ValidationError('Name can Contain only alphabets'))
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
 
             if any(not char.isalpha() for char in user.last_name):
                 form.add_error('last_name', ValidationError('Name can contain only alphabets'))
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
 
             if User.objects.filter(email = user.email).exists():
                 form.add_error('email',ValidationError('Another user has registered with the same email address'))
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
 
             if  validate_email(user.email):
                 form.add_error('email', ValidationError('Please enter a valid email address'))
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
 
             if len(password) < 8:
-                form.add_error('password',ValidationError('Password too short'))
+                form.add_error('password',ValidationError('Password too short(Minimum 8 characters)'))
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
 
             if password != password1:
                 form.add_error('confirm_password',ValidationError('Password does not match'))
-            ti = 'Create New Account'
-            return render(request, self.template_name, {'form': form,'ti':ti})
+                return render(request, self.template_name, {'form': form, 'ti': self.ti})
+
+
 
             user.set_password(password)
+            user.save()
             usrwlt = UserWallet()
             usrwlt.user = user
             usrwlt.save()
-            user.save()
+
             user.groups.add(Group.objects.get(name='NormalUser'))
 
             # Return User Object if Credentials are correct
