@@ -246,14 +246,37 @@ class BookTickets(LoginRequiredMixin,CreateView):
         form = self.form_class(request.POST,mov_id=pk)
         if form.is_valid():
             ticket = form.save(commit=False)
+
             ticket.user = request.user
-            ticket.movie = Movie.objects.all().filter(pk = pk).first()
+            ticket.movie = Movie.objects.get(pk = pk)
+            #Ticket numbers taken for the shows
+            nos = []
+            tis = Ticket.objects.filter(movie=Movie.objects.get(pk=pk),show=ticket.show)
+            for t in tis:
+                nos.append(t.seat_no)
+            if ticket.seat_no in nos:
+                form.add_error('seat_no','Seat Already taken')
+                return render(request, self.template_name, {'form': form,'seats':range(max_seats),'tickets':tickets,'shows':shows,'ti':self.title})
             cred = UserWallet.objects.get(user=request.user)
+            if cred.credit-ticket.price < 0:
+                form.add_error('seat_no','Please restock your account before Booking tickets')
+                return render(request, self.template_name,
+                              {'form': form, 'seats': range(max_seats), 'tickets': tickets, 'shows': shows,
+                               'ti': self.title})
             cred.credit = cred.credit - ticket.price
             cred.save()
             #TODO Beautify Email
-            ticket.theatre = Theatre.objects.get(pk = ticket.show.theatre_id)
-            email = EmailMessage('Booking Tickets '+str(ticket.movie.name),"Ticket Confirmed -- Seat No "+str(ticket.seat_no),'sivakarthik51@gmail.com',[ticket.user.email])
+            ticket.theatre = Theatre.objects.get(pk=ticket.show.theatre_id)
+            msg1 = 'Hi ' + str(
+                ticket.user) + '!\n\nYour ticket booking has been confirmed, with the following details : \n'
+            msg2 = 'Movie : ' + str(ticket.movie) + '\nTheatre : ' + str(ticket.theatre) + '\nShow : ' + str(
+                ticket.show) + '\nSeat Number : ' + str(ticket.seat_no)
+            msg3 = '\nPrice : Rs.' + str(ticket.price)
+            msg4 = '\nRemaining Credit: Rs.' +str(cred.credit)
+            msg5 = '\n\nThank you for choosing TheatriX, Enjoy your movie!'
+            msg = msg1 + msg2 + msg3 + msg4 + msg5
+            email = EmailMessage('Your tickets for ' + str(ticket.movie.name), msg,
+                                 'TheatriX.BookingConfirmation@gmail.com', [ticket.user.email])
             try:
                 if email.send():
                     print "Email Sent"

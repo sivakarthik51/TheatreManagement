@@ -55,12 +55,10 @@ class Ticket(models.Model):
     show = models.ForeignKey(Show,on_delete=models.CASCADE)
     user = models.ForeignKey(User)
     price = models.FloatField(default=250.0)
-    seat_no = models.IntegerField(unique=True,validators=[MaxValueValidator(49), MinValueValidator(0)])
+    seat_no = models.IntegerField(validators=[MaxValueValidator(49), MinValueValidator(0)])
 
     class Meta:
-        unique_together = ('show', 'seat_no')
-
-
+        unique_together = (('show', 'seat_no'))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -68,7 +66,7 @@ class Ticket(models.Model):
 
 
     def __str__(self):
-        return self.show.movie.name + '-'+ self.seat_no
+        return self.show.movie.name + '-'+ str(self.seat_no)
 
     def get_absolute_url(self):
         return reverse('Movies:detail',kwargs={'pk':self.show.movie.id})
