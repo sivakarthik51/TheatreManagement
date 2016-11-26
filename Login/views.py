@@ -72,7 +72,7 @@ class UserFormView(View):
                         return redirect('Movies:theatre_specific')
                     else:
                         return redirect('Movies:index')
-        return render(request,self.template_name,{'form':form})
+        return render(request,self.template_name,{'form':form,'ti':self.ti})
 
 class Logout(View):
     def get(self,request):

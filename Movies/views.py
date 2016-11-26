@@ -119,7 +119,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     form_class = MovieCreateForm
     template_name = 'Movies/movie_form.html'
@@ -203,7 +203,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 class MovieUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
     permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     model = Movie
     fields = ['name', 'director', 'genre', 'movie_poster']
@@ -215,13 +215,13 @@ class MovieUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
 class MovieDelete(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
     permission_required = 'Movies.add_movie'
     permission_denied_message = 'Forbidden'
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     model = Movie
     success_url = reverse_lazy('Movies:index')
 
 class BookTickets(LoginRequiredMixin,CreateView):
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     form_class = TicketForm
     template_name = 'Movies/ticket_form.html'
@@ -315,7 +315,7 @@ class ListMovies_Theatres(UserPassesTestMixin,LoginRequiredMixin,ListView):
 
 
 class TicketDetailView(LoginRequiredMixin,generic.DetailView):
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     model=Ticket
     template_name = 'Movies/ticket_details.html'
@@ -326,7 +326,7 @@ class TicketDetailView(LoginRequiredMixin,generic.DetailView):
         context["mov_meta"] = Movie_Meta.objects.all().filter(movie_id=self.object.movie.id).first()
         return context
 
-class MovieQueries(LoginRequiredMixin,generic.ListView):
+class MovieQueries(generic.ListView):
     login_url = '/'
     redirect_field_name = None
     model = Movie
@@ -351,7 +351,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
             return redirect('Movies:index')
         if filter_condition == str(1):
             print "res"
-            movies= Movie.objects.filter(theatre__city=query)
+            movies= Movie.objects.filter(theatre__city__contains=query)
             distinct = []
             checked = []
             for movie in movies:
@@ -402,7 +402,7 @@ class MovieQueries(LoginRequiredMixin,generic.ListView):
 
 
 class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
-    login_url = '/'
+    login_url = 'Login:register'
     redirect_field_name = None
     permission_required = 'Movies.add_movie'
     form_class = ShowForm
