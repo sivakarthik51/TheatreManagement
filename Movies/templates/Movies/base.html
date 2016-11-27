@@ -12,7 +12,7 @@
     <script>
         $(document).ready(function() {
             $(".nav a").on("click", function () {
-                $(".nav").find(".active").removeClass("active");
+                $(".nav li").find(".active").removeClass("active");
                 $(this).parent().addClass("active");
             });
         });
@@ -83,10 +83,16 @@
         <div class="collapse navbar-collapse" id="topNavBar">
 
             <ul class = "nav navbar-nav">
-                <li class="active">
+                <li class="">
                     <a href="{% url 'Movies:index' %}">
                         <span class="glyphicon glyphicon-film" aria-hidden="true"></span>&nbsp;
                         Movies
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'Home:about' %}">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+                        About Us
                     </a>
                 </li>
 

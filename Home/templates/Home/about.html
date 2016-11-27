@@ -1,0 +1,65 @@
+{% extends 'Movies/base.html' %}
+{% block title %}
+    About Us
+{% endblock %}
+{% block body %}
+    <style>
+    .img-center {
+	margin: 0 auto;
+}
+
+</style>
+   <div class="container ">
+
+        <!-- Introduction Row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">About Us
+                    <small>It's Nice to Meet You!</small>
+                </h1>
+                <p>We are Students of R.V. College of Engineering. This is our DBMS Project</p>
+            </div>
+        </div>
+
+       <div class = "row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Establishments
+                    <small>Our Partners</small>
+                </h1>
+            </div>
+                {% for e in establishments %}
+                    <div class = "col-lg-4">
+                        <h3>{{ e.name }}</h3>
+                     </div>
+                {% endfor %}
+
+       </div>
+
+        <!-- Team Members Row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="page-header">Our Team</h2>
+            </div>
+            <div class="col-lg-4 col-sm-6 text-center">
+                <img class="img-circle img-responsive img-center" src="http://placehold.it/200x200" alt="">
+                <h3>Siva Karthik R
+                    <small>1RV14CS159</small>
+                </h3>
+                <p>Lead Programmer</p>
+            </div>
+            <div class="col-lg-4 col-sm-6 text-center">
+                <img class="img-circle img-responsive img-center" src="http://placehold.it/200x200" alt="">
+                <h3>Srinivas R
+                    <small>1RV14CS160</small>
+                </h3>
+                <p>Lead Programmer</p>
+            </div>
+
+        </div>
+
+        <hr>
+
+
+    </div>
+    <!-- /.container -->
+{% endblock %}

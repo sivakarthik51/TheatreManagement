@@ -265,7 +265,7 @@ class BookTickets(LoginRequiredMixin,CreateView):
                                'ti': self.title})
             cred.credit = cred.credit - ticket.price
             cred.save()
-            #TODO Beautify Email
+
             ticket.theatre = Theatre.objects.get(pk=ticket.show.theatre_id)
             msg1 = 'Hi ' + str(
                 ticket.user) + '!\n\nYour ticket booking has been confirmed, with the following details : \n'

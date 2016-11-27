@@ -40,7 +40,6 @@
   </table>
   </div>
             <h4>Running in Theatres:</h4>
-            <!--TODO List Theatres running the movie-->
             <hr>
 
             {% for t in theatres %}
@@ -48,13 +47,31 @@
                 <p>{{ t }}</p>
                 <p>{{ t.location }}</p>
                 <p>Shows:</p>
-                <ul>
+                {% if shows.count != 0 %}
+                <table class="table table-hover">
+                 <thead>
+                    <tr>
+                        <th>Theatre</th>
+                        <th>Timing</th>
+                    </tr>
+                 </thead>
+                <tbody>
+
                     {% for s in shows %}
                         {% if s.theatre == t %}
-                            <li>{{ s }} -- {{ s.show_time }}</li>
+                            <tr>
+                            <td>{{ s.theatre.name }}</td>
+                            <td>{{ s.show_time }}</td>
+                            </tr>
                         {% endif %}
+
                     {% endfor %}
-                </ul>
+                </tbody>
+                </table>
+                    {% else %}
+                        <p>No Shows Available yet. Please Check back Later</p>
+
+                {% endif %}
                 <footer>{{ t.city }}</footer>
                 </blockquote>
             {% endfor %}

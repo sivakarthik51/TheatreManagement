@@ -50,7 +50,7 @@ class MovieQueryForm(forms.ModelForm):
         model=Movie
         fields=['theatre']
 
-#TODO Show Form
+
 class ShowForm(forms.ModelForm):
     show_time = forms.DateTimeField(widget=DateTimeWidget(usel10n=True, bootstrap_version=3))
     # show_time = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime())
