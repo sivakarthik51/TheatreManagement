@@ -1,0 +1,31 @@
+{% extends 'Movies/base.html' %}
+
+
+{% block title %}Add a New Employee{% endblock %}
+{% block body %}
+    {% block style %}
+        {% load static %}
+            <link rel="stylesheet" href="{% static 'Movies/style.css' %}">
+    {% endblock %}
+
+<div class = "container-fluid">
+    <div class = "row">
+        <div class = "col-sm-12 col-md-7">
+            <div class = "panel panel-primary" >
+                <div class="panel-heading">Add Employee</div>
+                <div class = "panel-body">
+
+                    <form class = "form-basic" action = "" method = 'post' enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% include 'Movies/form-template.html' %}
+                        <div class="form-group">
+                                <button type="submit" class = "btn btn-success">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

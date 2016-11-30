@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
             $(".nav a").on("click", function () {
@@ -42,30 +44,15 @@
 </head>
 <body>
     <div class = "container-fluid">
-        <div class = "jumbotron">
-        <div class = "row">
-        <div class = 'col-md-6'>
-            <h1 style="font-family: Satisfy">TheatriXs</h1>
+    {% load  static %}
+        <div class = "jumbotron text-center" style = "background-image: url({% static "Home/bg2.jpg" %});background-size: cover ">
+
+
+            <h1 style="font-family: Satisfy;">TheatriXs</h1>
             <p>The Movie Lover</p>
-        </div>
-        <!--
-        <div class="col-md-6">
-            <div class = "pull-right">
-                {% if user.is_authenticated %}
-                    <p class=" text-primary">Welcome,{{ user.username }}</p>
-                    {% if role != None %}
-                        <p class="text-primary">Representative, {{ role }}</p>
-                        {% endif %}
-                    {% if  usrwlt != None %}
-                    <p class="text-primary">Credit Remaining: {{ usrwlt.credit }}</p>
-                        {% endif %}
-                    {% else %}
-                        <p class = "bg-primary text-danger">Please Login to continue</p>
-                {% endif %}
-            </div>
-        </div>
-        -->
-        </div>
+
+
+
         </div>
     </div>
     <nav class="navbar navbar-inverse">
@@ -101,6 +88,14 @@
 
 
             <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated and can_change %}
+                <li class="">
+                    <a href="{% url 'Establishments:employee_index' %}">
+                        <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>&nbsp;
+                        Employees
+                    </a>
+                </li>
+            {% endif %}
             {% if user.is_authenticated and can_change %}
                 <li class="">
                     <a href="{% url 'Movies:movie_add' %}">

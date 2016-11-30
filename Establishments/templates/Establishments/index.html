@@ -1,0 +1,62 @@
+{% extends 'Movies/base.html' %}
+{% block title %}
+    Employees
+{% endblock %}
+{% block style %}
+    <script>
+        $(document).ready(function() {
+        $('#emps').dataTable();
+});
+    </script>
+{% endblock %}
+{% block body %}
+    <div class = "container">
+        <h2>Employee Details</h2>
+    <hr>
+    <form action="{% url 'Establishments:employee_create' %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name ="employee_id" value="{{ e.id }}" />
+                            <button type="submit" class="btn btn-primary btn-block">
+
+                                <span class = "glyphicon glyphicon-add"></span>
+                                Add Employee
+                            </button>
+    </form>
+    <hr></hr>
+        <div class = " table-hover">
+            <table id="emps" class = "table table-hover">
+                <thead>
+                    <th>Name</th>
+                    <th>Theatre</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+                {% for e in all_Employees %}
+                    <tr>
+                        <td>{{ e.name }}</td>
+                        <td>{{ e.theatre.name }}</td>
+                        <td>{{ e.Role }}</td>
+                        <td>
+                            <form action="{% url 'Establishments:employee_delete' e.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name ="employee_id" value="{{ e.id }}" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <span class = "glyphicon glyphicon-trash"></span>
+                            </button>
+                        </form>
+                            <form action="{% url 'Establishments:employee_edit' e.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name ="employee_id" value="{{ e.id }}" />
+                            <button type="submit" class="btn btn-info btn-sm">
+                                <span class = "glyphicon glyphicon-edit"></span>
+                            </button>
+                        </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

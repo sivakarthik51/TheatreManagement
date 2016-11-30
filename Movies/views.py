@@ -123,13 +123,15 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     redirect_field_name = None
     form_class = MovieCreateForm
     template_name = 'Movies/movie_form.html'
-    title="Add Movie"
+    title="Add Movie "
     def get(self,request):
         form = self.form_class(request.GET,establishment_user=request.user)
+        self.title = self.title+str(Establishment.objects.get(user = self.request.user).name)
         return render(request, self.template_name, {'form': form,'ti':self.title})
 
     def post(self, request):
         print request.user
+        self.title = self.title + str(Establishment.objects.get(user=self.request.user).name)
         form = self.form_class(request.POST,request.FILES,establishment_user=request.user)
         print request.FILES
         if form.is_valid():

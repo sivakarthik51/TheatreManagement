@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^movies/',include('Movies.urls')),
     url(r'^auth/',include('Login.urls')),
+    url(r'^establishment/',include('Establishments.urls'))
 
 ]
 if settings.DEBUG:
