@@ -179,7 +179,7 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
                     metadata.movie= movie_form
                     metadata.rating = rating
                     metadata.release_date = str(movie.get('year'))
-                    metadata.runtime= str(filter(str.isdigit,movie.get('runtime')))
+                    metadata.runtime= str(filter(str.isdigit,str(movie.get('runtime'))))
 
                     metadata.save()
                     topActors = 5
@@ -251,6 +251,7 @@ class BookTickets(LoginRequiredMixin,CreateView):
 
             ticket.user = request.user
             ticket.movie = Movie.objects.get(pk = pk)
+            ticket.price = ticket.show.price
             #Ticket numbers taken for the shows
             nos = []
             tis = Ticket.objects.filter(movie=Movie.objects.get(pk=pk),show=ticket.show)
@@ -430,6 +431,9 @@ class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
                 show.movie = Movie.objects.get(pk=pk)
                 if show.show_time < datetime.now():
                     form.add_error('show_time',ValidationError('Time must be after this moment'))
+                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title})
+                if(show.price <=45 ):
+                    form.add_error('price',ValidationError('Please Check the Price'))
                     return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title})
                 show.save()
             except Exception as e:

@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'Login',
     'datetimewidget',
     'Establishments',
-    'offlinecdn',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'Login.context_processors.get_user_wallet',
                 'Login.context_processors.get_user_role',
+                'Login.context_processors.isEstablishment',
             ],
 
         },

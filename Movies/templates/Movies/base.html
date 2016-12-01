@@ -145,7 +145,7 @@
                                     <div class="col-sm-12">
 
 
-                                        <p class="text-center"><span class="glyphicon glyphicon-user "></span><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+                                        <a href="{% url 'Login:dashboard' %}"><p class="text-center"><span class="glyphicon glyphicon-user "></span><strong>{{ user.first_name }} {{ user.last_name }}</strong></p></a>
                                         <p class="text-center text-success text-small">{{ user.email }}</p>
                                         {% if role != None %}
                                         <p class="text-left">

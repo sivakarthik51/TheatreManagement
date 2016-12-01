@@ -15,7 +15,7 @@
             </div>
             <div class = "col-md-8">
                 <h5>IMDB Rating: {{mov_meta.rating }}</h5>
-                <h5>Runtime: {{ mov_meta.runtime }}</h5>
+                <h5>Runtime: {{ mov_meta.runtime }} minutes</h5>
                 <h5>Release: {{ mov_meta.release_date }}</h5>
                 <hr>
                 <div class="table-responsive">
@@ -43,6 +43,10 @@
             <tr>
                 <td>Theatre:</td>
                 <td>{{ object.show.theatre.name }}</td>
+            </tr>
+            <tr>
+                <td>Price:</td>
+                <td>{{ object.show.price }}</td>
             </tr>
 
     </tbody>

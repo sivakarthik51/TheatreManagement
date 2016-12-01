@@ -9,6 +9,7 @@ from .forms import UserForm,LoginForm
 from django.core.validators import validate_email
 from models import UserWallet
 from django.contrib.auth.mixins import LoginRequiredMixin
+from Movies.models import Ticket
 
 class UserFormView(View):
     form_class = UserForm
@@ -108,4 +109,5 @@ class Dashboard(LoginRequiredMixin,View):
     template_name = 'Login/dashboard.html'
 
     def get(self,request):
-        return render(request,self.template_name,{'usr':request.user})
+        tickets = Ticket.objects.filter(user=self.request.user)
+        return render(request,self.template_name,{'usr':request.user,'tickets':tickets})

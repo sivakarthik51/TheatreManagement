@@ -2,11 +2,60 @@
 {% block title %}
     Dashboard
 {% endblock %}
-
+{% block style %}
+    <script>
+    $(document).ready(function(){
+        $('#tics').dataTable({
+            paginate:false,
+        })
+    })
+            </script>
+{% endblock %}
 {% block body %}
     <div class="container">
         <h2>User Status</h2>
-        <h3>User Name: {{ usr.username }}</h3>
-        <
+        <table class = "table table-hover">
+            <thead>
+                <tr>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>User Name</td>
+                    <td>{{ usr.username }}</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ usr.first_name }} {{ usr.last_name }}</td>
+                </tr>
+                <tr>
+                    <td>Registered Email</td>
+                    <td>{{ usr.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>Recent Bookings</h2>
+        <table id="tics" class = "table table-hover">
+            <thead>
+                <tr>
+                    <th>Movie</th>
+                    <th>Theatre</th>
+                    <th>Time</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for t in tickets %}
+                <tr>
+                    <td>{{ t.movie }}</td>
+                    <td>{{ t.theatre }}</td>
+                    <td> {{ t.show.show_time }}   </td>
+                    <td>Rs.{{ t.price }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
     </div>
 {% endblock %}

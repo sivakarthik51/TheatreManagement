@@ -16,7 +16,7 @@ class Movie(models.Model):
     genre = models.CharField(max_length=100)
     meta_completed = models.BooleanField(default=False)
     movie_poster = models.FileField()
-    max_no_seats = models.IntegerField(default=0)
+    max_no_seats = models.IntegerField(default=50)
 
     def get_absolute_url(self):
         return reverse('Movies:detail',kwargs={'pk':self.pk})
@@ -45,6 +45,7 @@ class Show(models.Model):
     theatre = models.ForeignKey(Theatre,on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
     show_time = models.DateTimeField(editable=True)
+    price = models.FloatField(default=250.0)
     def __str__(self):
         return self.theatre.name +"-"+ str(self.show_time)
 

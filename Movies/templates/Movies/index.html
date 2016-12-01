@@ -29,10 +29,12 @@
                         <p>{{ movie.name }}</p>
                         <p >Director: {{ movie.director }}</p>
                         <p >Genre: {{ movie.genre }}</p>
+                        {%  if user.is_authenticated and not isEstablishment %}
                         <form action="{% url 'Movies:book_ticket' movie.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button class="btn btn-info" type="submit" >Buy Tickets</button>
                         </form>
+                        {% endif %}
                         {%  if user.is_authenticated and can_change %}
                         <form action="{% url 'Movies:movie_delete' movie.id %}" method="post" style="display: inline;">
                             {% csrf_token %}

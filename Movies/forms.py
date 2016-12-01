@@ -56,7 +56,7 @@ class ShowForm(forms.ModelForm):
     # show_time = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime())
     class Meta:
         model = Show
-        fields=['show_time','theatre']
+        fields=['show_time','price','theatre']
         #exclude = ('show_time',)
 
     def clean(self):
