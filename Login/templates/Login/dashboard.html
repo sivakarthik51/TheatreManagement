@@ -8,6 +8,9 @@
         $('#tics').dataTable({
             paginate:false,
         })
+        $('#theatres').dataTable({
+            paginate:false,
+        })
     })
             </script>
 {% endblock %}
@@ -42,6 +45,25 @@
             </tbody>
         </table>
         {% if user.is_authenticated and role != None %}
+            <h2>Theatres</h2>
+            <table id ="theatres" class="table table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>City</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for t in theatres %}
+                <tr>
+                <td>{{ t.name }}</td>
+                <td>{{ t.location }}</td>
+                <td>{{ t.city }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
             <h2>Stats</h2>
             <table class="table table-hover">
                 <thead>

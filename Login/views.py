@@ -9,7 +9,7 @@ from .forms import UserForm,LoginForm
 from django.core.validators import validate_email
 from models import UserWallet
 from django.contrib.auth.mixins import LoginRequiredMixin
-from Movies.models import Ticket
+from Movies.models import Ticket,Theatre
 from django.db.models import Avg,Sum,Count
 
 class UserFormView(View):
@@ -113,9 +113,10 @@ class Dashboard(LoginRequiredMixin,View):
         tickets = Ticket.objects.filter(user=self.request.user)
         if request.user.is_authenticated and not request.user.is_anonymous and request.user.groups.filter(name='Establishment').exists():
             tickets=Ticket.objects.filter(theatre__establishment__user=request.user)
+            theatres=Theatre.objects.filter(establishment__user=request.user)
             total_revenue = tickets.aggregate(Sum('price'))
             no_of_tickets_sold = tickets.aggregate(Count('id'))
             print "Revenue:"+str(total_revenue)
             print "No of tickets sold"+str(no_of_tickets_sold)
-            return render(request,self.template_name,{'usr':request.user,'tickets':tickets,'rev':total_revenue['price__sum'],'nticketsSold':no_of_tickets_sold['id__count']})
+            return render(request,self.template_name,{'usr':request.user,'tickets':tickets,'rev':total_revenue['price__sum'],'nticketsSold':no_of_tickets_sold['id__count'],'theatres':theatres})
         return render(request,self.template_name,{'usr':request.user,'tickets':tickets})
