@@ -414,15 +414,17 @@ class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     def get(self,request,pk):
         form = self.form_class(request.GET,mov_id = pk,establishment_user=request.user)
         title = "Create Show for "+str(Movie.objects.get(pk = pk).name)
-        return render(request,self.template_name,{'form':form,'pk':pk,'ti':title})
+        shows = Show.objects.filter(show_time__gte=datetime.now(),movie__name=Movie.objects.get(pk=pk).name, theatre__establishment__user=request.user)
+        return render(request,self.template_name,{'form':form,'pk':pk,'ti':title,'shows':shows})
 
     def post(self,request,pk):
         form = self.form_class(request.POST,mov_id = pk,establishment_user=request.user)
         title = "Create Show for " + str(Movie.objects.get(pk=pk).name)
 
-        #request.POST['show_time'] = dateutil.parser.parse(request.POST['show_time_0'] + " " + request.POST['show_time_1'])
 
 
+        shows = Show.objects.filter(show_time__gte=datetime.now(),movie__name=Movie.objects.get(pk=pk).name,theatre__establishment__user=request.user)
+        print shows
         print form.is_valid()
         if form.is_valid():
             try:
@@ -431,13 +433,13 @@ class CreateShow(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
                 show.movie = Movie.objects.get(pk=pk)
                 if show.show_time < datetime.now():
                     form.add_error('show_time',ValidationError('Time must be after this moment'))
-                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title})
+                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title,'shows':shows})
                 if(show.price <=45 ):
                     form.add_error('price',ValidationError('Please Check the Price'))
-                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title})
+                    return render(request, self.template_name, {'form': form, 'pk': pk, 'ti': title,'shows':shows})
                 show.save()
             except Exception as e:
                 print e
 
             return redirect('Movies:detail', pk=pk, )
-        return render(request, self.template_name, {'form': form, 'pk': pk,'ti':title})
+        return render(request, self.template_name, {'form': form, 'pk': pk,'ti':title,'shows':shows})
