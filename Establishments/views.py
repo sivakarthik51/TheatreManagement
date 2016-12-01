@@ -2,11 +2,13 @@ from django.shortcuts import render,redirect
 from django.views import generic,View
 from django.views.generic import CreateView,UpdateView,DeleteView
 from django.core.exceptions import ValidationError
+from django.views.generic.edit import ModelFormMixin
+
 from Movies.models import Movie
 from Establishments.models import Establishment,Employee,Theatre
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from forms import EmployeeForm
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy,reverse
 # Create your views here.
 class EmployeeIndexView(PermissionRequiredMixin,LoginRequiredMixin,generic.ListView):
     permission_required = 'Movies.add_movie'
@@ -41,7 +43,8 @@ class EmployeeCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 
             emp = form.save(commit=False)
 
-            if any(not char.isalpha() for char in emp.name):
+            if any(not char.isalpha() and not char.isspace() for char in emp.name):
+
                 form.add_error('name', ValidationError('Name can Contain only alphabets'))
                 return render(request, self.template_name, {'form': form, 'ti': self.title})
             print "Saving Form"
@@ -54,8 +57,21 @@ class EmployeeUpdate(PermissionRequiredMixin,LoginRequiredMixin,UpdateView):
     permission_denied_message = 'Forbidden'
     login_url = 'Login:register'
     redirect_field_name = None
+    form_class = EmployeeForm
+    template_name = 'Establishments/employee_form.html'
     model = Employee
-    fields = ['name', 'theatre', 'Role']
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instantiating the form.
+        """
+        kwargs = super(ModelFormMixin, self).get_form_kwargs()
+        kwargs.update({'estb_usr': self.request.user})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('Establishments:employee_index',)
+
 
 class EmployeeDelete(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
     permission_required = 'Movies.add_movie'

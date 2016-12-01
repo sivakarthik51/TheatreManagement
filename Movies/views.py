@@ -139,6 +139,8 @@ class MovieCreate(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
 
             try:
                 movie_form = form.save(commit=False)
+                check = Movie.objects.filter(name=movie_form.name).exists()
+                print check
                 ia = imdb.IMDb()
                 if movie_form.meta_completed is False:
                     s_result = ia.search_movie(movie_form.name)

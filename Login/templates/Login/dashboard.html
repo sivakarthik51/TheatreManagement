@@ -25,6 +25,12 @@
                     <td>User Name</td>
                     <td>{{ usr.username }}</td>
                 </tr>
+                {% if usr.is_authenticated and role != None %}
+                    <tr>
+                        <td>Role</td>
+                        <td>Administrator, {{ role }}</td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <td>Name</td>
                     <td>{{ usr.first_name }} {{ usr.last_name }}</td>
@@ -35,6 +41,26 @@
                 </tr>
             </tbody>
         </table>
+        {% if user.is_authenticated and role != None %}
+            <h2>Stats</h2>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Revenue Generated</th>
+                </tr>
+                </thead>
+            <tbody>
+            <tr>
+                <td>Total Revenue</td>
+                <td>Rs.{{ rev }}</td>
+            </tr>
+             <tr>
+                <td>Number of Tickets Sold</td>
+                <td>{{nticketsSold}}</td>
+            </tr>
+            </tbody>
+            </table>
+        {% else %}
         <h2>Recent Bookings</h2>
         <table id="tics" class = "table table-hover">
             <thead>
@@ -56,6 +82,6 @@
             {% endfor %}
             </tbody>
         </table>
-
+        {% endif %}
     </div>
 {% endblock %}
