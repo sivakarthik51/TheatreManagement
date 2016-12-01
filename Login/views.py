@@ -108,4 +108,4 @@ class Dashboard(LoginRequiredMixin,View):
     template_name = 'Login/dashboard.html'
 
     def get(self,request):
-        return render(request,self.template_name)
+        return render(request,self.template_name,{'usr':request.user})
