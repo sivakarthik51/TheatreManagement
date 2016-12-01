@@ -25,7 +25,7 @@
         <div class="col-md-5">
         {% for s in shows %}
 
-            <p>{{ s }}</p>
+            <p id="sname_{{ forloop.counter0 }}">{{ s }}</p>
             <div class = "well" id="{{ s }}">
             <script>
                 $(document).ready(function () {
@@ -35,6 +35,14 @@
                         $('#seat_{{ forloop.parentloop.counter0 }}_{{ t.seat_no }}').removeClass("btn btn-primary btn-xs").addClass("btn btn-danger btn-xs")
                         {% endif %}
                     {% endfor %}
+
+                    $('#id_show').change(function(){
+                        $('#chshow').html( $('#id_show').find('option:selected').html())
+
+                    });
+                    $('#id_seat_no').change(function(){
+                        $('#chseat').html( $('#id_seat_no').val())
+                    })
                 })
             </script>
 
@@ -44,6 +52,11 @@
                 {% endfor %}
             </div>
         {% endfor %}
+        <div class="well">
+            <h2>Ticket Details</h2>
+            <p>Show:<span id="chshow"></span></p>
+            <p>Seat No:<span id="chseat"></span></p>
+        </div>
         </div>
     </div>
 </div>

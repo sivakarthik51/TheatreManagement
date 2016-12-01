@@ -14,7 +14,7 @@
       margin: auto;
   }
   .carousel-caption h3 {
-      color: #fff !important;
+      color: #000 ;
   }
   @media (max-width: 600px) {
     .carousel-caption {
@@ -42,19 +42,19 @@
     <div class="carousel-inner" role="listbox">
       <div class="item active">
           {% load static %}
-        <img src="{% static "Home/ny.jpg" %}" alt="New York" width="1200" height="700">
-        <div class="carousel-caption">
-          <h3></h3>
-          <p></p>
+        <img src="{% static "Home/body1.jpg" %}" alt="New York" width="1200" height="700">
+        <div class="carousel-caption" style="color:#000000;">
+          <h3 style="color:#000000;">The Most Loved Movie Site</h3>
+          <p>Thank you for your continued support</p>
         </div>
       </div>
 
       <div class="item">
           {% load static %}
-        <img src="{% static "Home/chicago.jpg" %}" alt="Chicago" width="1200" height="700">
+        <img src="{% static "Home/bg1.jpg" %}" alt="Chicago" width="1200" height="700">
         <div class="carousel-caption">
-          <h3></h3>
-          <p></p>
+          <h3 style="color:#ffffff;">Electrifying Moments</h3>
+          <p>Come Experience the Fun</p>
         </div>
       </div>
 

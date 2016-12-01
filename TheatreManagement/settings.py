@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'Login',
     'datetimewidget',
     'Establishments',
+    'offlinecdn',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -8,6 +8,7 @@ from django.views.generic import View,RedirectView
 from .forms import UserForm,LoginForm
 from django.core.validators import validate_email
 from models import UserWallet
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class UserFormView(View):
     form_class = UserForm
@@ -100,3 +101,11 @@ class Login(View):
                         return redirect('Movies:index')
 
         return redirect('Login:register')
+
+class Dashboard(LoginRequiredMixin,View):
+    redirect_field_name = None
+    login_url = 'Login:register'
+    template_name = 'Login/dashboard.html'
+
+    def get(self,request):
+        return render(request,self.template_name)
