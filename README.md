@@ -11,7 +11,7 @@
 
       * pip install (-U) imdbpy
       * pip install (-U) django_extensions
-
+      * pip install (-U) django-datetime-widget
 
 4. Open up a command prompt and run the following command "python manage.py runserver 8000".
 
